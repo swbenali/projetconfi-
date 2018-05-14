@@ -1,0 +1,75 @@
+<!-- <div [ngClass]="{'dropdown':true,'multiple':isMulti}"> -->
+  <br>
+  <div class="ui fluid multiple dropdown" [ngClass]="{'invalid':isError}" >
+    <!-- <button (click)="isOpen=!isOpen"  class="dropbtn">Please select</button> -->
+    <!-- <input readonly type="text"  placeholder="Please select..." (click)="isOpen=!isOpen" [value]="inputfield" id="myInput" > -->
+    <div class="square"  (click)="menuClicked($event)" >
+      <p *ngIf="(!selectedItems || selectedItems.length===0)">Please select</p>
+    <div ><a *ngFor="let item of selectedItems" (click)="onDelete(item,$event)"
+    >{{item.value }},</a>
+    </div>   
+    <div *ngIf="isError"><p class="error">Please select {{min<2?'an item':'at least '+ min+ ' items' }}!</p></div>
+    </div>
+    <div *ngIf="isOpen" id="myDropdown" 
+     [ngClass]="{'dropdown-content':!isOpen,'dropdown-content show':isOpen}">
+      <input *ngIf="guide" type="text" placeholder="Search.." [(ngModel)]="searchInput" id="searchInput" >
+      <a *ngFor="let item of ( data | filter:searchInput)" (click)="onItemClick(data.indexOf(item),$event)">{{item}}</a>
+    </div>
+  </div>
+   <div *ngIf="datasource">
+     <button class="btn btn-succes" (click)="saveData()">Save</button>
+   </div>
+
+  <!-- <ng-content></ng-content>  -->
+
+
+
+  <!-- <div *ngIf="(!selectForm.valid && selectForm.dirty)">
+  <span  > <font color="red">Please select {{ isMulti ? (selectForm.get('min').value?'at least '+selectForm.get('min').value +' items'  :  'one item')   : 'an item' }}! </font></span>
+  <!-- <span > Please select {{ isMulti ? 'item(s)':'an item'}}!</span> -->
+<!-- </div>
+  <span *ngIf="itemsOverFull"><font color="orange"> You can not select more than the maximum value!</font> </span>
+  <div class="buttonHolder"> --> 
+
+<!-- <div *ngIf="isMulti">
+  <label for="Min">Min:</label>
+  <input type="number" formControlName="min"><br>
+  <label for="Max">Max:</label>
+  <input type="number" formControlName="max">
+
+</div> -->
+<!-- 
+
+  <button class="btn btn-success" [disabled]="!selectForm.valid" type="submit">{{ isSubmitted ? 'Hide Selected': 'Show Selected'}}</button> 
+  <button class="btn btn-danger" type="reset" (click)="onReset()">Reset</button> 
+
+</div> 
+
+   
+
+</div> -->
+
+  <!-- <div class="col-xs-12" *ngIf="isSubmitted">
+     <ul> -->
+   <!-- <span><font [color]="selectedItems.length===0? 'red':'green'">{{ selectedItems.length===0?'No Items Seletected!': -->
+     <!-- ('Selected Countr'+(selectedItems.length==1?'y': 'ies')+ -->
+     <!-- ' ['+selectedItems.length+'] '+ (selectedItems.length==1? 'is': 'are')) }}
+    </font></span>
+    
+    <div >
+       <ul>
+       <li *ngFor="let item of selectedItems;let i=index"> <a 
+         (click)="onDelete(i)"
+         style="cursor: pointer;" -->
+        <!-- >         {{item}}   --> 
+           <!-- --> 
+            <!-- <img
+              src="assets/remove.png"
+              alt="remove"
+              class="img-responsive"
+              style="max-height: 10px;">
+          
+      </a></li>
+    </ul>
+    </div>
+  </div> --> 
