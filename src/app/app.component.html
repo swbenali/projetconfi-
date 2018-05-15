@@ -25,14 +25,29 @@
     </div>
     <div class="column">
          Firebase
-        <app-select [isMulti]="true" [guide]="false" [datasource]="datasrc" [min]=2 [max]=5 >
+        <app-select [isMulti]="true" [guide]="false" [dataSource]="datasrc" [min]=2 [max]=5 >
+        </app-select>
+    </div>
+    <div class="column">
+         Firebase + Function
+        <app-select [isMulti]="true" [guide]="false" [dataSource]="datasrc2" [dataScheme]="setDataScheme2" [min]=2 [max]=5 >
+        </app-select>
+    </div>
+    <div class="column">
+         NgContent
+        <app-select [isMulti]="true" [guide]="true">
+                <app-option>Winter</app-option>
+                <app-option>Autumn</app-option>
+                <app-option>Summer</app-option>
+                <app-option>Spring</app-option>
+                <app-option>Other</app-option>
         </app-select>
     </div>
   </div>
 <!-- <app-select name="" id="">
-    <option>a</option>
-    <option>b</option>
-    <option>b</option>
-    <option>b</option>
-    <option>b</option>
+    <app-option>a</app-option>
+    <app-option>b</app-option>
+    <app-option>b</app-option>
+    <app-option>b</app-option>
+    <app-option>b</app-option>
 </app-select> -->

@@ -1,46 +1,31 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { Subject } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 import  'rxjs/Rx';
 import { country_list } from './select/countries';
+import { DataScheme } from './select/datascheme.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DatastorageService {
+export class DatastorageService{
   private datasource=null;
   private data;
-  public source:Subject<string>;
-  constructor(private http:Http) { 
-this.source=new Subject<string>();
-this.datasource= "https://select-24e95.firebaseio.com/countries.json";
+    constructor(private http:Http) {  }
 
-this.source.subscribe((src)=>{
-console.log('called');
-
-});
-
+  setDataSource(src:string){
+    this.datasource=src;
   }
 
-  getData(){
-   this.http.get(this.datasource)
+  getData(callback?:DataScheme):Observable<string[]>{
+  return this.http.get(this.datasource)
    .map(
     (response: Response) => {
-      const items: string[] = response.json();
+      const items: string[] = callback?callback(response.json()):response.json();
     
       return items;
     }
-  )  
-      .subscribe(
-    (item:string[])=>{ this.data= item;
-  console.log('Recieved'+item);
-  
-   });
-   return this.data;
+  );
   }
-   storeData(){
-  // console.log(this.datasource);
-   
-    this.http.put(this.datasource,country_list).subscribe(()=>console.log("OK!"));
-   }
+ 
 }

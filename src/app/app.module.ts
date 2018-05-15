@@ -5,12 +5,14 @@ import { AppComponent } from './app.component';
 import { SelectComponent } from './select/select.component';
 import { FilterPipe } from './select/filter.pipe';
 import { HttpModule } from '@angular/http';
+import { OptionComponent } from './select/option.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SelectComponent,
-    FilterPipe
+    FilterPipe,
+    OptionComponent
   ],
   imports: [
     BrowserModule,

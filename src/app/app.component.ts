@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { country_list } from './select/countries';
 import * as firebase from 'firebase';
+import { DataScheme } from './select/datascheme.interface';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,9 @@ import * as firebase from 'firebase';
 })
 export class AppComponent implements OnInit{
   title = 'app';
+  private apply=null;
   public countries= country_list;
+  public datasrc2= "https://select-24e95.firebaseio.com/restaurants.json";
   public datasrc= "https://select-24e95.firebaseio.com/countries.json";
   ngOnInit() {
     firebase.initializeApp({
@@ -17,5 +20,16 @@ export class AppComponent implements OnInit{
       authDomain: "select-24e95.firebaseapp.com",
     });
 
+}
+setDataScheme2(data:any):string[]{
+   let t=[];
+   for(let item of data)
+      t.push(item.deal);
+  return t;
+  // return data.filter((item,index,array)=>{return item.startsWith('A')});
+}
+setDataScheme(data:any):string[]{
+    return data;
+  // return data.filter((item,index,array)=>{return item.startsWith('A')});
 }
 }
