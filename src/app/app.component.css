@@ -1,11 +1,19 @@
 .column {
     float: left;
     width: 33.33%;
+    padding-left:1cm;
+    max-height: auto;
+
+
 }
 
 /* Clear floats after the columns */
-.row:after {
+.rows:after {
     content: "";
     display: table;
     clear: both;
 }
+
+
+
+

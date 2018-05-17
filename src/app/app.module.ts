@@ -12,12 +12,12 @@ import { OptionComponent } from './select/option.component';
     AppComponent,
     SelectComponent,
     FilterPipe,
-    OptionComponent
+    OptionComponent,
   ],
   imports: [
     BrowserModule,
      FormsModule,
-     HttpModule
+     HttpModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

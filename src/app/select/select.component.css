@@ -1,18 +1,5 @@
-.dropbtn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-}
-
-.dropbtn:hover, .dropbtn:focus {
-    background-color: #3e8e41;
-}
 
 #myInput {
-    border-box: box-sizing;
     background-repeat: no-repeat;
     font-size: 16px;
     padding: 14px 20px 12px 45px;
@@ -20,11 +7,9 @@
     border-bottom: 1px solid #ddd;
 }
 #searchInput {
-    border-box: box-sizing;
     background-image: url('/assets/search.png'); 
      background-position: 14px 12px;
      background-size: 30px;
-
     background-repeat: no-repeat;
     font-size: 16px;
     padding: 14px 20px 12px 45px;
@@ -36,19 +21,24 @@
 
 .dropdown {
     position: relative;
-    display: inline-block;
-
+    width: 100%;
+    overflow: auto;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .dropdown-content {
     display: none;
-    position: absolute;
+    position: fixed;
     background-color: #f6f6f6;
-    min-width: 230px;
     overflow: auto;
     border: 1px solid #ddd;
-    z-index: 1;
-    max-height:300px
+    width: 100%;
+    display: block;
+    max-height: 300px;
+    opacity: 1000;
+
+
 }
 
 .dropdown-content a {
@@ -63,14 +53,55 @@ a.select {background-color: #ddd}
 
 .show {display:block;}
 
- div.square{
-    border:1px inset #AAA;height:30px;width:258px;
-
- }
-
  div.invalid{
     border:1px inset red ;
  }
  p.error{
      color:red;
  }
+ .tag-container {
+    border:1px inset #AAA;
+    width: auto;
+    height: auto;
+    overflow: auto;
+}
+
+.tag {
+    width: auto;
+    height: auto;
+    background:rgb(152, 223, 223);
+    border: 1px inset rgb(118, 245, 245);
+    margin-left: 2px;
+    padding-right: 8px;
+    padding-top: -2px;
+    padding-bottom: -2px;
+    float: left;
+    position: relative;
+  
+
+}
+.bottom {
+    position: relative;
+    bottom: 0;
+    left: auto;
+    vertical-align:middle;
+
+}
+i {
+    right:-200px;
+    border: solid black;
+    position: inherit;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 2px;
+    margin-top: 12px;
+
+
+}
+.down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
+.tag:hover {
+    background-color:red;
+}

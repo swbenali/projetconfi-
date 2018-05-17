@@ -10,7 +10,6 @@
  * -dataScheme: Callback function's reference which gets a JSON Object as Input and returns an array of string.
  */
 
-
 import {
   Component,
   OnInit,
@@ -25,136 +24,244 @@ import {
   AfterViewInit,
   AfterViewChecked,
   ContentChildren,
-  Type
+  Type,
+  EventEmitter,
+  Output,
+  HostBinding,
+  Renderer
 } from "@angular/core";
 import { NgForm, FormGroup, FormControl, Validators } from "@angular/forms";
 import { Http, Response } from "@angular/http";
 import { DatastorageService } from "../datastorage.service";
 import { OptionComponent } from "./option.component";
 import { DataScheme } from "./datascheme.interface";
+import { Observable } from "rxjs/Observable";
+import { Subject } from "rxjs";
 
 @Component({
   selector: "app-select",
   templateUrl: "./select.component.html",
-  styleUrls: ["./select.component.css"]
+  styleUrls: ["./select.component.css"],
 })
-export class SelectComponent implements OnInit , AfterViewInit{
+export class SelectComponent implements OnInit, AfterViewInit {
   @Input() public isMulti: boolean = false;
-  @Input() public data= null;
+  @Input() public data = null;
   @Input() public min: number = -1;
   @Input() public max: number = -1;
   @Input() public guide: boolean = false;
   @Input() public isRequired: boolean = false;
-  @Input() dataSource: string = null;
-  @Input() dataScheme:DataScheme;
+  @Input() public dataSource: string=null;
+  @Input() public dataScheme: DataScheme|string;
+  @Input() public throwable = false;
+  private inputString:string="";
   public isOpen: boolean = false;
   public selectedItems: { value: string; ref }[] = [];
   public inputfield = "";
-  public searchInput = "";
+  public serachInput = "";
   public isError = false;
   public isClicked = false;
-  public options:OptionComponent[];
-  @ContentChildren(OptionComponent) optionComponent:QueryList<OptionComponent>;
-  itemsOverFull = false;
-  constructor(private ds: DatastorageService) {}
+  public options: OptionComponent[];
+  private parentNode: any;
+  private lastFocus;
+  public dropDownContentWidth:number;
+  public dropDownContentLeft:number;
+  public serachInputWidth:number;
+  public serachInputLeft:number;
+  @Output("selected") selected: Subject<any> = new Subject<any>();
+  @ContentChildren(OptionComponent) optionComponent: QueryList<OptionComponent>;
+  public itemsOverFull = false;
+  public minimumRequired = false;
+  constructor(private ds: DatastorageService, private element: ElementRef,private renderer:Renderer) {}
 
   ngOnInit() {
-    
-    if (this.dataSource != null) {
+    if (this.dataSource != null && !this.guide) {
       this.ds.setDataSource(this.dataSource);
-      this.ds.getData(this.dataScheme).subscribe((res: string[]) => (this.data = res));
+      this.ds
+        .getData(<DataScheme> this.dataScheme)
+        .subscribe((res: string[]) => (this.data = res));
     }
-
-    
+    if(this.dataSource && this.guide){
+      this.ds.setDataSource(this.dataSource);
+    }
   }
 
-  menuClicked(event: Event) {
+  public menuClicked(event: Event): void {
     this.isClicked = true;
-    if (event.srcElement.localName !== "a") this.isOpen = !this.isOpen;
+    if (this.lastFocus && this.isOpen) {
+      this.lastFocus.focus();
+      console.log("onFocus");
+    }
+    this.isOpen = !this.isOpen;
   }
-  setWarn() {
-    this.showWarning();
-    new Audio(
-      "data:audio/wav;base64,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qJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU="
-    ).play();
-  }
-
-  showWarning() {
-    // console.log('overclick');
-    this.itemsOverFull = true;
-
-    setTimeout(() => (this.itemsOverFull = false), 3000);
-  }
-
-  onDelete(item: { value: string; ref }, e?: Event) {
+  public onDelete(item: { value: string; ref }, e?: Event): void {
     (<Element>item.ref).className = "";
     const index = this.selectedItems.indexOf(item);
     this.selectedItems.splice(index, 1);
+    this.refreshSelection();
+    this.doCheck();
+    e.preventDefault();
+    e.stopPropagation();
   }
 
-  onItemClick(index: number, e?: Event) {
-    const item = this.data[index];
+  public onItemClick(index: number, e?: Event): void {
+console.log(this.element);
 
-    if (e.srcElement.className === "") {
+
+    const item = this.data[index];
+    const elt = { value: item, ref: e.srcElement };
+    if (this.itemsOverFull && !this.itemIncludes(elt)) {
+      e.stopPropagation();
+      return;}
+
+    if (this.isMulti) {
       if (
-        this.isMulti &&
-        (this.max == -1 ||
-          !this.selectedItems ||
-          this.selectedItems.length < this.max)
-      )
-        this.selectedItems
-          ? this.selectedItems.push({ value: item, ref: e.srcElement })
-          : (this.selectedItems = [{ value: item, ref: e.srcElement }]);
-      else if (!this.isMulti)
-        this.selectedItems = [{ value: item, ref: e.srcElement }];
-      e.srcElement.className = "select";
+        this.selectedItems &&
+        (this.max == -1 || this.selectedItems.length <= this.max)
+      ) {
+        if (!this.itemIncludes(elt)) this.selectedItems.push(elt);
+        else this.selectedItems.splice(this.itemIndex(elt), 1);
+      } else
+        this.selectedItems = !this.selectedItems ? [elt] : this.selectedItems;
     } else {
-      e.srcElement.className = "";
-      this.selectedItems.splice(
-        this.selectedItems.findIndex((elt, index: number, value) => {
-          return elt.value === item;
-        }),
-        1
-      );
+      if (!this.isMulti && this.selectedItems.length == 0)
+        this.selectedItems = [elt];
+      else if (this.itemIncludes(elt)) this.selectedItems = [];
+      else this.selectedItems = [elt];
     }
 
-    this.isOpen = this.isMulti || !this.isOpen;
-    this.searchInput = "";
+    this.refreshSelection();
+    this.serachInput = "";
+    this.doCheck();
+    if (this.isMulti) {
+      e.stopPropagation();
+    }
   }
-  @HostListener("document:click", ["$event"])
-  clickAway(e: Event) {
-    if (e.srcElement.localName == "html") {
+  @HostListener("window:click", ["$event.path"])
+  onClickOutside($event: Array<any>) {
+    const elementRefInPath = $event.find(node => node === this.parentNode);
+
+    if (!elementRefInPath) {
       this.isOpen = false;
     }
     this.doCheck();
   }
-  private doCheck() {
+
+  private doCheck(): void {
     this.isError =
       this.isClicked &&
-      this.isRequired &&
-      (!this.selectedItems ||
-        this.selectedItems.length == 0 ||
-        (this.isMulti &&
-          this.max != -1 &&
-          this.selectedItems.length > this.max) ||
-        (this.isMulti &&
+      !this.isOpen &&
+      ((this.isRequired && !this.countSelected()) ||
+        (this.isRequired &&
           this.min != -1 &&
-          this.selectedItems.length < this.min));
+          this.max != -1 &&
+          this.min > this.max) ||
+        (this.isRequired &&
+          this.max != -1 &&
+          this.countSelected() > this.max) ||
+        (this.isRequired && this.min != -1 && this.countSelected() < this.min));
+    this.itemsOverFull =
+      this.isMulti &&
+      this.max != -1 &&
+      this.selectedItems &&
+      this.selectedItems.length === this.max;
+    this.minimumRequired =
+      this.isClicked &&
+      this.countSelected() > 0 &&
+      !this.isOpen &&
+      this.min != -1 &&
+      this.countSelected() < this.min;
+    if (this.throwable)
+      switch (true) {
+        case this.min != -1 && this.max != -1 && this.min > this.max:
+          throw { code: 1, message: "Please verify your min and max values!" };
+        case this.isClicked && this.isRequired && !this.countSelected():
+          throw { code: 2, message: "No item selected!" };
+        case this.max != -1 && this.countSelected() > this.max:
+          throw { code: 3, message: "Maximum selected items reached!" };
+        case this.min != -1 && this.countSelected() < this.min:
+          throw { code: 4, message: "Minimum selected items reached!" };
+        case !this.isMulti && this.min != -1 && this.max != 1:
+          throw {
+            code: 5,
+            message:
+              "Forbidden to set max value or min value for single selection!"
+          };
+      }
   }
-  ngAfterViewInit(){
-    if(this.optionComponent.length!==0){
-    // console.log(this.optionComponent.toArray());
-this.options=this.optionComponent.toArray(); 
-  if(!this.data) this.data=[];
-  for (let item of this.options)
-     this.data.push(item.data);
-   //  console.log(this.data);
-         
+  ngAfterViewInit() {
+    const elt = this.element.nativeElement;
+    this.parentNode = elt.parentNode;
+    if (this.optionComponent.length !== 0) {
+      this.options = this.optionComponent.toArray();
+      if (!this.data) this.data = [];
+      for (let item of this.options) this.data.push(item.data);
+    } else this.options = null;
+    const tag= elt.parentElement.querySelector(".tag-container");
+    this.dropDownContentWidth = tag.offsetWidth;
+    this.dropDownContentLeft = tag.offsetLeft + tag.parentElement.offsetLeft - tag.clientLeft;
+    this.serachInputWidth = tag.offsetWidth;
+    this.serachInputLeft = tag.offsetLeft + tag.parentElement.offsetLeft - tag.clientLeft;
+  }
+
+  private refreshSelection(): void {
+    const v = [];
+    if (!this.isMulti)
+      this.selected.next(
+        this.selectedItems && this.selectedItems.length == 1
+          ? this.selectedItems[0].value
+          : ""
+      );
+    else {
+      for (let item of this.selectedItems) v.push(item.value);
+      this.selected.next(v);
     }
-    else
-  this.options=null;
   }
 
+  public itemIncludes(item): boolean {
+    return this.itemIndex(item)!= -1;
+  }
+  public eltIncludes(item: string): boolean {
+    return (
+      this.selectedItems.findIndex((elt, index, ref) => {
+        return item === elt.value;
+      }) != -1
+    );
+  }
+  public itemIndex(item):number{
+    return this.selectedItems.findIndex((elt, index, ref) => {
+      return item.value === elt.value;
+    });
+    
+  }
 
+  public onSearchClick(e: Event): void {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  public countSelected(): number {
+    return this.selectedItems ? this.selectedItems.length : 0;
+  }
+  public onInput(event:Event){
+    
+    if(this.dataSource && this.guide){
+   const c= this.serachInput;   
+     this.data=this.ds.fetchData(c,this.dataScheme? <string> this.dataScheme:null);
+
+    }
+  }
+
+  @HostListener('window:resize',['$event']) onResize(event){
+    const elt = this.element.nativeElement;
+  const tag= elt.parentElement.querySelector(".tag-container");
+    this.dropDownContentWidth = tag.offsetWidth;
+    this.dropDownContentLeft = tag.offsetLeft + tag.parentElement.offsetLeft - tag.clientLeft;
+    
+    this.serachInputWidth = tag.offsetWidth;
+    this.serachInputLeft = tag.offsetLeft + tag.parentElement.offsetLeft - tag.clientLeft;
+    
+   
+
+  }
  
+
 }

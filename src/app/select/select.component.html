@@ -1,22 +1,26 @@
-  <div class="ui fluid multiple dropdown" [ngClass]="{'invalid':isError}" >
-    <div class="square" [ngStyle]="{'overflow':((!selectedItems || selectedItems.length===0)?'hidden': 'auto'),
-  'resize':((!selectedItems || selectedItems.length===0)?'hidden':'both')}"
-     (click)="menuClicked($event)" >
-      <p *ngIf="(!selectedItems || selectedItems.length===0)">Please select</p>
-    <div ><a *ngFor="let item of selectedItems" (click)="onDelete(item,$event)"
-    >{{item.value }},<br *ngIf="(selectedItems && selectedItems.length!=0)"></a>
-    </div>   
-    <div *ngIf="isError"><p class="error">Please select {{min<2?'an item':'at least '+ min+ ' items' }}!</p></div>
-    </div>
+  
+
+  <div class="ui fluid multiple dropdown"  (click)="menuClicked($event)" 
+  >
+    <div class="tag-container" [ngClass]="{'invalid':isError}" >
+      <p *ngIf="(!selectedItems || selectedItems.length===0)">Please select<i class="arrow down"></i></p>
+    <div class="tag" *ngFor="let item of selectedItems"  (click)="onDelete(item,$event)" >{{item.value}}<span class="bottom"
+     style="cursor: pointer;" data-toggle="Remove"><font color="red"> x</font></span>
+    </div> </div>
+  <div *ngIf="isError"><p class="error">Please select {{min<2?'an item':'at least '+ min+ ' items' }}!</p></div>
+  <div *ngIf="itemsOverFull"><p class="error">You can't select more than {{this.max}} items!</p></div>
+  <div *ngIf="minimumRequired && !isError"><p class="error">You must select more than {{this.min}} items!</p></div>
     <div *ngIf="isOpen" id="myDropdown" 
-     [ngClass]="{'dropdown-content':!isOpen,'dropdown-content show':isOpen}">
-      <input *ngIf="guide" type="text" placeholder="Search.." [(ngModel)]="searchInput" id="searchInput" >
-      <a *ngFor="let item of ( data | filter:{data:data,input:searchInput} ) " (click)="onItemClick(data.indexOf(item),$event)">{{item}}</a>
+     [ngClass]="{'dropdown-content':!isOpen,'dropdown-content show':isOpen}" 
+     [ngStyle]="{'width.px':dropDownContentWidth,'left.px':dropDownContentLeft}">
+      <input *ngIf="guide"  type="text" placeholder="Search.." (click)="onSearchClick($event)" (input)="onInput($event)" [(ngModel)]="searchInput" id="searchInput" 
+      [ngStyle]="{'width.px':serachInputWidth,'left.px':serachInputLeft}">
+     
+      <a  *ngFor="let item of ( data | filter:{data:data,input:searchInput} ) " (click)="onItemClick(data.indexOf(item),$event)"
+      [ngClass]="{'select':eltIncludes(item)}"      
+      >{{item}}</a>
   
     </div>
   </div>
-   <!-- <div *ngIf="datasource">
-     <button class="btn btn-succes" (click)="saveData()">Save</button>
-   </div> -->
-
+  
   <ng-content></ng-content> 

@@ -1,53 +1,64 @@
-<div class="row">
-    <div class="column">Select Simple<app-select [isRequired]="true"  [data]="countries">
-    </app-select></div>
-    <div class="column">Select guidé<app-select [isRequired]="true"  [guide]="true" [data]="countries">
-    </app-select></div>
-    <div class="column">
-        Select multiple
-        <app-select [isMulti]="true" [isRequired]="true"  [data]="countries" >
+<div class="rows">
+    <div class="column"><label>Selection Simple <font color="red">Required</font></label>
+        <app-select (selected)="onSelect($event)" [isRequired]="true" [data]="countries">
+        </app-select>
+    </div>
+    <div class="column"><label>Select guidé <font color="red">Required</font></label>
+        <app-select #select (selected)="onSelect($event)" [isRequired]="true" [guide]="true" [data]="countries">
         </app-select>
     </div>
     <div class="column">
-        Select multiple
-        <app-select [isMulti]="true" [isRequired]="true"  [guide]="true"  [data]="countries" >
+       <label> Select Multiple <font color="red">Required</font></label>
+        <app-select (selected)="onSelect($event)" [isMulti]="true" [isRequired]="true" [data]="countries">
         </app-select>
     </div>
     <div class="column">
-         multiple+min+max
-        <app-select [isMulti]="true" [isRequired]="true" [guide]="false" [data]="countries" [min]=2 [max]=5 >
+        <label> Multiple + Guide <font color="red">Required</font></label>
+        <app-select (selected)="onSelect($event)" [isMulti]="true" [isRequired]="true" [guide]="true" [data]="countries">
         </app-select>
     </div>
     <div class="column">
-         multiple+min+max Not Required
-        <app-select [isMulti]="true" [guide]="false" [data]="countries" [min]=2 [max]=5 >
+       <label> Multiple + min + max <font color="red">Required</font></label>
+        <app-select (selected)="onSelect($event)" [isMulti]="true" [isRequired]="true" [guide]="false" [data]="countries" [min]=2
+            [max]=5>
         </app-select>
     </div>
     <div class="column">
-         Firebase
-        <app-select [isMulti]="true" [guide]="false" [dataSource]="datasrc" [min]=2 [max]=5 >
+       <label> Multiple+min+max <font color="blue">Not Required</font></label>
+        <app-select (selected)="onSelect($event)" [isMulti]="true" [guide]="false" [data]="countries" [min]=2 [max]=5>
         </app-select>
     </div>
     <div class="column">
-         Firebase + Function
-        <app-select [isMulti]="true" [guide]="false" [dataSource]="datasrc2" [dataScheme]="setDataScheme2" [min]=2 [max]=5 >
+        Firebase <font color="blue">Not Required</font>
+        <app-select (selected)="onSelect($event)" [isMulti]="true" [guide]="false" [dataSource]="datasrc" [min]=2 [max]=5>
         </app-select>
     </div>
     <div class="column">
-         NgContent
-        <app-select [isMulti]="true" [guide]="true">
-                <app-option>Winter</app-option>
-                <app-option>Autumn</app-option>
-                <app-option>Summer</app-option>
-                <app-option>Spring</app-option>
-                <app-option>Other</app-option>
+        Firebase + Function <font color="blue">Not Required</font>
+        <app-select (selected)="onSelect($event)" [isMulti]="true" [guide]="false" [dataSource]="datasrc2" [dataScheme]="setDataScheme2"
+            [min]=2 [max]=5>
+        </app-select>
+    </div> 
+     <div class="column">
+        Firebase + Guide + Min + Max<font color="blue">Not Required</font>
+        <app-select (selected)="onSelect($event)" [isMulti]="true" [guide]="true" [dataSource]="datasrc2"  [dataScheme]="'deal'"
+            [min]=2 [max]=5>
+        </app-select>
+    </div> 
+    <div class="column">
+        NgContent <font color="blue">Not Required</font>
+        <app-select (selected)="onSelect($event)" [isMulti]="true" [guide]="true">
+            <app-option>Winter</app-option>
+            <app-option>Autumn</app-option>
+            <app-option>Summer</app-option>
+            <app-option>Spring</app-option>
+            <app-option>Other</app-option>
         </app-select>
     </div>
-  </div>
-<!-- <app-select name="" id="">
-    <app-option>a</app-option>
-    <app-option>b</app-option>
-    <app-option>b</app-option>
-    <app-option>b</app-option>
-    <app-option>b</app-option>
-</app-select> -->
+ </div>
+<!--<button (click)="onAdd()" class="btn btn-success">Add</button>
+<br>
+Results:
+<div >
+
+</div> -->
